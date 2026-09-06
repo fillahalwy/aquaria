@@ -2,45 +2,99 @@
 
 @layer base {
   :root {
-    --background: #090d16;
-    --foreground: #f1f5f9;
-    --card: #0f172a;
-    --card-foreground: #f8fafc;
-    --primary: #06b6d4;
-    --primary-foreground: #021e28;
-    --accent: #10b981;
-    --accent-foreground: #022018;
-    --muted: #1e293b;
-    --muted-foreground: #94a3b8;
-    --border: #1e293b;
+    /* Primary Dark Surfaces (Elevation Hierarchy) */
+    --background: #0b1017;
+    --surface-dark: #070b10;
+    --card-background: #0e1520;
+    --card-border: rgba(255, 255, 255, 0.08);
+
+    /* Accent & Highlight Colors */
+    --accent-primary: #eab308;
+    --accent-hover: #fde047;
+    --badge-nature: rgba(16, 185, 129, 0.15);
+    --badge-border: rgba(16, 185, 129, 0.3);
+
+    /* Typography Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
   }
 }
 
 body {
   background-color: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: var(--text-primary);
+  font-family: var(--font-plus-jakarta), system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* Custom glassmorphism utilities */
+.font-serif-luxury {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-sans-clean {
+  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+}
+
+/* Big Monumental Hero Title */
+.font-hero-title {
+  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Pill frame matching VEROLA / AQUARIA logo badge in reference */
+.pill-logo-frame {
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-radius: 9999px;
+  padding: 6px 22px;
+  background: rgba(11, 16, 23, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.08);
+}
+
+/* Pill capsule matching Reason For Choosing Us capsules */
+.pill-capsule {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  padding: 12px 24px;
+  background: rgba(11, 16, 23, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  text-align: center;
+  font-size: 0.825rem;
+  line-height: 1.4;
+  color: #cbd5e1;
+  transition: all 0.3s ease;
+}
+
+.pill-capsule:hover {
+  border-color: rgba(234, 179, 8, 0.7);
+  color: #ffffff;
+  background: rgba(14, 21, 32, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Glass panel & cards */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(14, 21, 32, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(14, 21, 32, 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.aquatic-glow {
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.25);
 }
 
 /* Custom scrollbar */
@@ -50,7 +104,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: #0b1017;
 }
 
 ::-webkit-scrollbar-thumb {
