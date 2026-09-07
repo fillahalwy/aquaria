@@ -1,71 +1,84 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import GitHub from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+
+// Extend session types to include username and id
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      username?: string | null;
+    } & DefaultSession["user"];
+  }
+
+  interface User {
+    username?: string | null;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    GitHub({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
     Credentials({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.username || !credentials?.password) {
           return null;
         }
 
-        const email = credentials.email as string;
-        const password = credentials.password as string;
+        const usernameInput = (credentials.username as string).trim().toLowerCase();
+        const passwordInput = credentials.password as string;
 
-        const user = await prisma.user.findUnique({
-          where: { email },
+        // Find user by username (or email if user inputs their email)
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { username: usernameInput },
+              { email: usernameInput },
+            ],
+          },
         });
 
         if (!user || !user.password) {
           return null;
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(passwordInput, user.password);
         if (!isPasswordValid) {
           return null;
         }
 
         return {
           id: user.id,
-          email: user.email,
+          username: user.username,
           name: user.name,
+          email: user.email,
           image: user.image,
         };
       },
     }),
   ],
   callbacks: {
-    async session({ session, token }) {
-      if (token?.sub && session.user) {
-        session.user.id = token.sub;
-      }
-      return session;
-    },
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id;
+        token.id = user.id;
+        token.username = user.username;
       }
       return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = (token.id as string) || (token.sub as string);
+        session.user.username = token.username as string | undefined;
+      }
+      return session;
     },
   },
   pages: {

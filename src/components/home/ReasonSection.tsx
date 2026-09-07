@@ -99,7 +99,6 @@ export default function ReasonSection() {
           <div className="w-28 sm:w-36 h-[3px] bg-amber-400 rounded-full shadow-sm shadow-amber-400/50" />
         </div>
       </div>
-
     </section>
   );
 }

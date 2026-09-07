@@ -10,7 +10,8 @@ generator client {
 model User {
   id            String         @id @default(cuid())
   name          String?
-  email         String         @unique
+  username      String         @unique
+  email         String?        @unique
   password      String?
   image         String?
   bio           String?
@@ -94,11 +95,14 @@ model Comment {
 model ForumThread {
   id           String        @id @default(cuid())
   title        String
-  content      String
+  content      String        @db.Text
   tag          String        // Alga, ParameterAir, Peralatan, dll.
+  mediaUrl     String?       @db.Text
+  mediaType    String?       // "image" | "video"
   upvotesCount Int           @default(0)
   isSolved     Boolean       @default(false)
   createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   userId       String
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -108,10 +112,11 @@ model ForumThread {
 
 model ForumAnswer {
   id           String       @id @default(cuid())
-  content      String
+  content      String       @db.Text
   isAccepted   Boolean      @default(false)
   upvotesCount Int          @default(0)
   createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   threadId     String
   thread       ForumThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
