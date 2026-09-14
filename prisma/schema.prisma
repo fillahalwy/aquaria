@@ -19,6 +19,7 @@ model User {
   updatedAt     DateTime       @updatedAt
 
   showcases     ShowcasePost[]
+  showcaseLikes ShowcaseLike[]
   comments      Comment[]
   threads       ForumThread[]
   answers       ForumAnswer[]
@@ -64,26 +65,41 @@ model VerificationToken {
 }
 
 model ShowcasePost {
-  id           String      @id @default(cuid())
+  id           String         @id @default(cuid())
   title        String
-  imageUrl     String
-  sizeSpan     String      @default("normal") // normal, tall, wide
-  dimensions   String      // Contoh: "30x20x20 cm"
+  style        String?        @default("Nature Aquarium") // Iwagumi, Nature Aquarium, Dutch, Biotope, Jungle, Paludarium
+  description  String?        @db.Text
+  imageUrl     String         @db.Text
+  sizeSpan     String         @default("normal") // normal, tall, wide
+  dimensions   String         // Contoh: "30x20x20 cm"
   lighting     String?
   co2System    String?
+  hardscape    String?
   plants       String[]
   fauna        String[]
-  likesCount   Int         @default(0)
-  createdAt    DateTime    @default(now())
+  likesCount   Int            @default(0)
+  createdAt    DateTime       @default(now())
 
   userId       String
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments     Comment[]
+  likes        ShowcaseLike[]
+}
+
+model ShowcaseLike {
+  id         String       @id @default(cuid())
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showcaseId String
+  showcase   ShowcasePost @relation(fields: [showcaseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime     @default(now())
+
+  @@unique([userId, showcaseId])
 }
 
 model Comment {
   id           String       @id @default(cuid())
-  content      String
+  content      String       @db.Text
   createdAt    DateTime     @default(now())
 
   userId       String
